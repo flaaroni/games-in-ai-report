@@ -13,9 +13,7 @@ MonoBehaviour:
   m_Name: ModelGrid
   m_EditorClassIdentifier: Assembly-CSharp::ModelGrid
   dimensions:
-  - gaps:
-    - 1
+  - gap: 1
     angle: 0
-  - gaps:
-    - 1
+  - gap: 1
     angle: 90
