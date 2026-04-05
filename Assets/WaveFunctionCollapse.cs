@@ -18,13 +18,15 @@ public class WaveFunctionCollapse : MonoBehaviour
 
 	private Tuple<List<States>, List<States>>[,] segmentsX;
 	private Tuple<List<States>, List<States>>[,] segmentsY;
-	public Tuple<List<States>, List<States>>[,] Segments => segmentsX;
-	public Tuple<States, States> this[int x, int y]
+	public Tuple<List<States>, List<States>>[,] SegmentsX => segmentsX;
+	public Tuple<List<States>, List<States>>[,] SegmentsY => segmentsX;
+	public Tuple<States, States> GetResultX(int x, int y)
 	{
-		get
-		{
-			return new(Segments[x, y].Item1[0], Segments[x, y].Item2[0]);
-		}
+		return new(SegmentsX[x, y].Item1[0], SegmentsX[x, y].Item2[0]);
+	}
+	public Tuple<States, States> GetResultY(int x, int y)
+	{
+		return new(SegmentsY[x, y].Item1[0], SegmentsY[x, y].Item2[0]);
 	}
 
 	void Start()
@@ -33,6 +35,7 @@ public class WaveFunctionCollapse : MonoBehaviour
 		segmentsY = new Tuple<List<States>, List<States>>[numCols, numRows];
 		allocateArray(segmentsX);
 		allocateArray(segmentsY);
+		return;
 		System.Random r = new System.Random();
 		int row = r.Next(1, numRows - 1);
 		int col = r.Next(1, numCols - 1);
