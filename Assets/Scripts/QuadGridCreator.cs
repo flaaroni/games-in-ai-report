@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class QuadGridCreator : MonoBehaviour
@@ -13,6 +14,7 @@ public class QuadGridCreator : MonoBehaviour
 
 		public QuadGridCreator Source { get; }
 		public QuadFace[,] Faces { get; }
+		public Material[] AllMaterials => Source.grid.AllMaterials;
 	}
 
 	public event Action<QuadGridEventArgs> OnMeshGenerated;
@@ -26,14 +28,24 @@ public class QuadGridCreator : MonoBehaviour
 	[SerializeField]
 	GameObject modelPrefab;
 
-	void Start()
+	[Header("Debug")]
+	[SerializeField]
+	[Range(0f, 1f)]
+	float delaySeconds = 0f;
+
+	IEnumerator Start()
 	{
 		if (!grid.IsValid())
 		{
 			Debug.LogError("Invalid grid configuration. Please check the dimensions and materials.");
-			return;
+			yield break;
 		}
+
 		QuadFace[,] faces = grid.GenerateGrid(transform, groupPrefab, modelPrefab);
+		if (delaySeconds > float.Epsilon)
+		{
+			yield return new WaitForSeconds(delaySeconds);
+		}
 		OnMeshGenerated?.Invoke(new QuadGridEventArgs(this, faces));
 	}
 }

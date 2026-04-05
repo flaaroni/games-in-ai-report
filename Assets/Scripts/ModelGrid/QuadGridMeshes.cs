@@ -96,7 +96,6 @@ public class QuadGridMeshes : ScriptableObject
 
 				// Create a mesh for this grid element
 				GenerateGridCell(groupClone.transform, modelPrefab, (x * XSubdivisions), (y * YSubdivisions), ref toReturn);
-				// FIXME: consider adding neighbors to the quad face here, but this will require some changes to the QuadFace class
 			}
 		}
 		return toReturn;
@@ -132,15 +131,38 @@ public class QuadGridMeshes : ScriptableObject
 				modelClone.transform.localScale = Vector3.one;
 
 				// Name the model
-				modelClone.name = $"Grid Cell Model ({x}, {y})";
+				modelClone.name = $"SubMesh ({x}, {y})";
 
 				// Retrieve the mesh filter
 				MeshFilter meshFilter = modelClone.GetComponent<MeshFilter>();
 				meshFilter.mesh = SubMeshes[x, y];
 
 				// Create a QuadFace for this grid cell and store it in the return array
-				toReturn[xOffset, yOffset] = new QuadFace((xOffset + x), (yOffset + y), modelClone, (byte)AllMaterials.Length);
-				// FIXME: consider adding edges and neighbors to the quad face here, but this will require some changes to the QuadFace class
+				int faceX = (xOffset + x), faceY = (yOffset + y);
+				toReturn[faceX, faceY] = new QuadFace(faceX, faceY, modelClone, (byte)AllMaterials.Length);
+
+				// Add neighbors to the left and below, if they exist
+				if (faceX > 0)
+				{
+					QuadEdge sharedEdge = new() {
+						axis = QuadEdge.Axis.Y,
+						X = faceX,
+						Y = faceY,
+					};
+					toReturn[faceX, faceY].AddNeighbor(sharedEdge, toReturn[faceX - 1, faceY]);
+					toReturn[faceX - 1, faceY].AddNeighbor(sharedEdge, toReturn[faceX, faceY]);
+				}
+				if (faceY > 0)
+				{
+					QuadEdge sharedEdge = new()
+					{
+						axis = QuadEdge.Axis.X,
+						X = faceX,
+						Y = faceY,
+					};
+					toReturn[faceX, faceY - 1].AddNeighbor(sharedEdge, toReturn[faceX, faceY]);
+					toReturn[faceX, faceY].AddNeighbor(sharedEdge, toReturn[faceX, faceY - 1]);
+				}
 			}
 		}
 	}

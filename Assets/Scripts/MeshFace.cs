@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public abstract class MeshFace<EDGE, NEIGHBOR>
 {
+	public enum Side : byte { Left, Right }
+
 	public MeshFace(GameObject model, byte numMaterials)
 	{
 		Model = model;
@@ -32,10 +34,15 @@ public abstract class MeshFace<EDGE, NEIGHBOR>
 	/// <summary>
 	/// Represents the edges of the face as a dictionary.
 	/// Keys indicates the edge index, and the value represents
-	/// the left side (false) or the right side (true) of the edge.
+	/// the left or right side of the edge.
 	/// </summary>
-	public abstract IDictionary<EDGE, bool> Edges { get; }
-	public abstract IEnumerable<NEIGHBOR> GetNeighbors();
+	public abstract IDictionary<EDGE, Side> Edges { get; }
+	/// <summary>
+	/// Represents the neighbors as a dictionary.
+	/// Keys indicates the edge the neighbors share,
+	/// and the value represents the neighbor itself.
+	/// </summary>
+	public abstract IDictionary<EDGE, NEIGHBOR> GetNeighbors();
 
 	protected MeshRenderer Renderer
 	{

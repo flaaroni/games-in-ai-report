@@ -1,25 +1,35 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class WaveFunctionCollapse : MonoBehaviour
 {
-	public enum States{
-		I,
-		E
+	public enum States : byte
+	{
+		E,
+		I
 	}
 
 	[SerializeField]
-	int numCols = 4;
-	
-	[SerializeField]
-	int numRows = 4;
+	QuadGridCreator gridCreator;
 
-	private Tuple<List<States>, List<States>>[,] segmentsX;
-	private Tuple<List<States>, List<States>>[,] segmentsY;
+	[Header("Debug")]
+	[SerializeField]
+	[Range(0f, 1f)]
+	float delaySeconds = 0f;
+
+	QuadFace[,] faces;
+	Material[] allMaterials;
+	Tuple<List<States>, List<States>>[,] segmentsX;
+	Tuple<List<States>, List<States>>[,] segmentsY;
+
 	public Tuple<List<States>, List<States>>[,] SegmentsX => segmentsX;
 	public Tuple<List<States>, List<States>>[,] SegmentsY => segmentsX;
+
+	public int NumCols => faces.GetLength(0);
+	public int NumRows => faces.GetLength(1);
+
 	public Tuple<States, States> GetResultX(int x, int y)
 	{
 		return new(SegmentsX[x, y].Item1[0], SegmentsX[x, y].Item2[0]);
@@ -29,40 +39,63 @@ public class WaveFunctionCollapse : MonoBehaviour
 		return new(SegmentsY[x, y].Item1[0], SegmentsY[x, y].Item2[0]);
 	}
 
-	void Start()
+	void Awake()
 	{
-		segmentsX = new Tuple<List<States>, List<States>>[numCols, numRows];
-		segmentsY = new Tuple<List<States>, List<States>>[numCols, numRows];
+		// Bind to the quad grid creator's event
+		// this will delay the call until the grid has been generated
+		gridCreator.OnMeshGenerated += OnMeshGenerated;
+	}
+
+	void OnMeshGenerated(QuadGridCreator.QuadGridEventArgs args)
+	{
+		// Retrieve necessary data from the event arguments
+		faces = args.Faces;
+		allMaterials = args.AllMaterials;
+
+		StartCoroutine(Generate());
+	}
+
+	IEnumerator Generate()
+	{
+		WaitForSeconds wait = null;
+		if (delaySeconds > float.Epsilon)
+		{
+			wait = new WaitForSeconds(delaySeconds);
+			yield return wait;
+		}
+
+		// Setup edge data
+		segmentsX = new Tuple<List<States>, List<States>>[NumCols, NumRows];
+		segmentsY = new Tuple<List<States>, List<States>>[NumCols, NumRows];
 		allocateArray(segmentsX);
 		allocateArray(segmentsY);
-		return;
-		System.Random r = new System.Random();
-		int row = r.Next(1, numRows - 1);
-		int col = r.Next(1, numCols - 1);
+
+		// Loop until all faces are collapsed
+		int row = UnityEngine.Random.Range(1, NumRows);
+		int col = UnityEngine.Random.Range(1, NumCols);
 		// 0 = left, 1 = right
-		int item = r.Next(2);
+		int item = UnityEngine.Random.value < 0.5f ? 0 : 1;
 		// 0 = column, 1 = row
-		int axis = r.Next(2);
+		int axis = UnityEngine.Random.value < 0.5f ? 0 : 1;
 		while (isValidFace(col, row, item, axis))
 		{
-			row = r.Next(1, numRows - 1);
-			col = r.Next(1, numCols - 1);
-			item = r.Next(2);
-			axis = r.Next(2);
+			row = UnityEngine.Random.Range(1, NumRows);
+			col = UnityEngine.Random.Range(1, NumCols);
+			item = UnityEngine.Random.value < 0.5f ? 0 : 1;
+			axis = UnityEngine.Random.value < 0.5f ? 0 : 1;
+
+			if (wait != null)
+			{
+				yield return wait;
+			}
 		}
 		removeState(col, row, item, axis);
 	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 	bool isValidFace(int col, int row, int item, int axis)
 	{
 		bool isLowestFace = (axis == 1 && item == 0 && row == 0) || (axis == 0 && item == 0 && col == 0);
-		bool isHighestFace = (axis == 1 && item == 1 && row == numRows - 1) || (axis == 0 && item == 1 && col == numCols - 1);
+		bool isHighestFace = (axis == 1 && item == 1 && row == NumRows - 1) || (axis == 0 && item == 1 && col == NumCols - 1);
 		bool xAndChosen = (axis == 0 && (item == 0 && segmentsX[col, row].Item1.Count == 1) || (item == 1 && segmentsX[col, row].Item2.Count == 2));
 		bool yAndChosen = (axis == 1 && (item == 0 && segmentsY[col, row].Item1.Count == 1) || (item == 1 && segmentsY[col, row].Item2.Count == 2));
 		return xAndChosen || yAndChosen || isHighestFace || isLowestFace;
@@ -70,10 +103,10 @@ public class WaveFunctionCollapse : MonoBehaviour
 
 	void allocateArray(Tuple<List<States>, List<States>>[,] array)
 	{
-		array = new Tuple<List<States>, List<States>>[numCols, numRows];
-		for (int i = 0; i < numCols; i++)
+		array = new Tuple<List<States>, List<States>>[NumCols, NumRows];
+		for (int i = 0; i < NumCols; i++)
 		{
-			for (int j = 0; j < numRows; j++)
+			for (int j = 0; j < NumRows; j++)
 			{
 				array[i, j] = new Tuple<List<States>, List<States>>(new List<States>(), new List<States>());
 				array[i, j].Item1.Add(States.I);
