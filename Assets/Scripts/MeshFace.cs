@@ -27,7 +27,8 @@ public abstract class MeshFace<EDGE, NEIGHBOR>
 		get => Renderer.sharedMaterial;
 		set => Renderer.sharedMaterial = value;
 	}
-	public SortedSet<byte> PossibleMaterials => possibleMaterials;
+
+	public ISet<byte> PossibleMaterials => possibleMaterials;
 	public bool IsCollapsed => possibleMaterials.Count == 1;
 	public bool IsEmpty => possibleMaterials.Count == 0;
 

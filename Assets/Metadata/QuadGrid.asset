@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52366fbb9ef0a6e45977806ed42064dd, type: 3}
   m_Name: QuadGrid
   m_EditorClassIdentifier: Assembly-CSharp::QuadGridMeshes
-  xUnits: 3
-  yUnits: 3
-  dimensions: {fileID: 11400000, guid: 56b459a273fc0c3439fe59be4f161c88, type: 2}
+  xUnits: 5
+  yUnits: 5
+  dimensions: {fileID: 11400000, guid: c948d3bd41a3a8c41b70c4a3bdbbd38e, type: 2}
   allMaterials:
   - {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
   - {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}

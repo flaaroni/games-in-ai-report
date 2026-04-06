@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4b392ef0a7295d428081b4d96bba630, type: 3}
+  m_Script: {fileID: 11500000, guid: 6376188cde770db41a95b119258e1b8a, type: 3}
   m_Name: GridDimensions
   m_EditorClassIdentifier: Assembly-CSharp::ModelGrid
   xDimension:
@@ -18,6 +18,6 @@ MonoBehaviour:
   yDimension:
     length: 1
     subdivisions: []
-    angle: 60
+    angle: 90
   zDimension:
     subdivisions: []

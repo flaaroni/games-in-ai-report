@@ -439,7 +439,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 539768526}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2895fe9c996592042a25f60c8849c95d, type: 3}
+  m_Script: {fileID: 11500000, guid: 29bd4569bdb3cf74880b8a3880f6f3eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeshCreator
   grid: {fileID: 11400000, guid: 891eb3ae23f38684da944b0af03e7242, type: 2}
