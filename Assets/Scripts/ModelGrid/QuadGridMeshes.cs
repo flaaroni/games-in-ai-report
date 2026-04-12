@@ -139,7 +139,7 @@ public class QuadGridMeshes : ScriptableObject
 
 				// Create a QuadFace for this grid cell and store it in the return array
 				int faceX = (xOffset + x), faceY = (yOffset + y);
-				toReturn[faceX, faceY] = new QuadFace(faceX, faceY, modelClone, (byte)AllMaterials.Length);
+				toReturn[faceX, faceY] = new QuadFace(faceX, faceY, modelClone);
 
 				// Add neighbors to the left and below, if they exist
 				if (faceX > 0)
