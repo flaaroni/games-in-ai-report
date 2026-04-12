@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IFace : IEquatable<IFace>
+public interface IFace : IEquatable<IFace>, IEquatable<object>
 {
 	/// <summary>
 	/// Sets the material of this face
@@ -20,4 +20,9 @@ public interface IFace : IEquatable<IFace>
 	/// and the value represents the neighbor itself.
 	/// </summary>
 	public IReadOnlyDictionary<IEdge, IFace> Neighbors { get; }
+	/// <summary>
+	/// Required so this face can be used as a key in a dictionary, and to compare two faces.
+	/// </summary>
+	/// <returns></returns>
+	public int GetHashCode();
 }

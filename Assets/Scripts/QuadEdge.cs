@@ -13,7 +13,7 @@ public class QuadEdge : IEdge
 
 	public override int GetHashCode() => HashCode.Combine(axis, X, Y);
 
-	public bool Equals(IEdge other)
+	public override bool Equals(object other)
 	{
 		if (other is QuadEdge)
 		{
@@ -23,5 +23,10 @@ public class QuadEdge : IEdge
 				&& (Y == compare.Y);
 		}
 		return false;
+	}
+
+	public bool Equals(IEdge other)
+	{
+		return Equals((object)other);
 	}
 }

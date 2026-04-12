@@ -56,13 +56,18 @@ public class QuadFace : IFace
 
 	public override int GetHashCode() => model.GetHashCode();
 
-	public bool Equals(IFace other)
+	public override bool Equals(object other)
 	{
 		if (other is QuadFace)
 		{
 			return model == ((QuadFace)other).model;
 		}
 		return false;
+	}
+
+	public bool Equals(IFace other)
+	{
+		return Equals((object)other);
 	}
 
 	protected MeshRenderer Renderer
