@@ -12,5 +12,5 @@ public interface IEdge : IEquatable<IEdge>
 	/// <summary>
 	/// Represents the faces this edge belongs to as a dictionary.
 	/// </summary>
-	public IDictionary<Side, IFace> Faces { get; }
+	public IReadOnlyDictionary<Side, IFace> Faces { get; }
 }
