@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public interface IEdge : IEquatable<IEdge>, IEquatable<object>
 {
+	const byte NUM_SIDES = 2;
 	/// <summary>
 	/// Assuming the edge is like a vector,
 	/// with start and end point, indicates the side of the edge,

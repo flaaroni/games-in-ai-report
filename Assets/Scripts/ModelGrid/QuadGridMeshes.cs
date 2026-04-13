@@ -1,9 +1,11 @@
-using System;
-using UnityEngine;
 using ProceduralToolkit;
+using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "QuadGrid.asset", menuName = "AI in Games/Quad Grid", order = 2)]
-public class QuadGridMeshes : ScriptableObject
+public class QuadGridMeshes : ScriptableObject, IGridGenerator
 {
 	[Header("Settings")]
 	[SerializeField]
@@ -21,6 +23,8 @@ public class QuadGridMeshes : ScriptableObject
 	[SerializeField]
 	Material[] allMaterials;
 
+	QuadEdgeFactory edgeFactory;
+
 	public int XUnits
 	{
 		get => xUnits;
@@ -33,6 +37,17 @@ public class QuadGridMeshes : ScriptableObject
 	}
 	public Material[] AllMaterials => allMaterials;
 	public GridDimensions Dimensions => dimensions;
+	public QuadEdgeFactory EdgeFactory
+	{
+		get
+		{
+			if (edgeFactory == null)
+			{
+				edgeFactory = new QuadEdgeFactory(XUnits, YUnits);
+			}
+			return edgeFactory;
+		}
+	}
 
 	public Mesh[,] SubMeshes
 	{
@@ -67,10 +82,11 @@ public class QuadGridMeshes : ScriptableObject
 		return true;
 	}
 
-	public QuadFace[,] GenerateGrid(Transform parent, GameObject groupPrefab, GameObject modelPrefab)
+	public (IEnumerable<IEdge> edges, IEnumerable<IFace> faces) Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab)
 	{
 		// Setup return variables
-		QuadFace[,] toReturn = new QuadFace[(XUnits * XSubdivisions), (YUnits * YSubdivisions)];
+		HashSet<IEdge> edges = new HashSet<IEdge>((XUnits * XSubdivisions) * (YUnits * YSubdivisions));
+		HashSet<IFace> faces = new HashSet<IFace>((XUnits * XSubdivisions) * (YUnits * YSubdivisions));
 
 		// Destroy all existing children on the parent transform
 		foreach (Transform child in parent)
@@ -95,10 +111,11 @@ public class QuadGridMeshes : ScriptableObject
 				groupClone.name = $"Grid Element ({x}, {y})";
 
 				// Create a mesh for this grid element
-				GenerateGridCell(groupClone.transform, modelPrefab, (x * XSubdivisions), (y * YSubdivisions), ref toReturn);
+				GenerateGridCell(groupClone.transform, modelPrefab, (x * XSubdivisions), (y * YSubdivisions)
+					, ref edges, ref faces);
 			}
 		}
-		return toReturn;
+		return (edges, faces);
 	}
 
 	int XSubdivisions => Dimensions.X.NumSubdivisions() + 1;
@@ -115,7 +132,7 @@ public class QuadGridMeshes : ScriptableObject
 		return Dimensions.X.GetVector(x) + Dimensions.Y.GetVector(y);
 	}
 
-	void GenerateGridCell(Transform parent, GameObject modelPrefab, int xOffset, int yOffset, ref QuadFace[,] toReturn)
+	void GenerateGridCell(Transform parent, GameObject modelPrefab, int xOffset, int yOffset, ref HashSet<IEdge> edges, ref HashSet<IFace> faces)
 	{
 		// Go through all subdivisions of the grid cell
 		for (int y = 0; y < YSubdivisions; ++y)
@@ -139,30 +156,11 @@ public class QuadGridMeshes : ScriptableObject
 
 				// Create a QuadFace for this grid cell and store it in the return array
 				int faceX = (xOffset + x), faceY = (yOffset + y);
-				toReturn[faceX, faceY] = new QuadFace(faceX, faceY, modelClone);
+				QuadFace newFace = new QuadFace(modelClone, faceX, faceY, EdgeFactory);
+				faces.Add(newFace);
 
-				// Add neighbors to the left and below, if they exist
-				if (faceX > 0)
-				{
-					QuadEdge sharedEdge = new() {
-						axis = QuadEdge.Axis.Y,
-						X = faceX,
-						Y = faceY,
-					};
-					toReturn[faceX, faceY].AddNeighbor(sharedEdge, toReturn[faceX - 1, faceY]);
-					toReturn[faceX - 1, faceY].AddNeighbor(sharedEdge, toReturn[faceX, faceY]);
-				}
-				if (faceY > 0)
-				{
-					QuadEdge sharedEdge = new()
-					{
-						axis = QuadEdge.Axis.X,
-						X = faceX,
-						Y = faceY,
-					};
-					toReturn[faceX, faceY - 1].AddNeighbor(sharedEdge, toReturn[faceX, faceY]);
-					toReturn[faceX, faceY].AddNeighbor(sharedEdge, toReturn[faceX, faceY - 1]);
-				}
+				// Update edges list
+				edges.AddRange(newFace.Edges.Keys);
 			}
 		}
 	}

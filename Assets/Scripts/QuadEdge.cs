@@ -9,7 +9,7 @@ public class QuadEdge : IEdge
 	public int X { get; set; }
 	public int Y { get; set; }
 
-	public IReadOnlyDictionary<IEdge.Side, IFace> Faces => throw new NotImplementedException();
+	public IReadOnlyDictionary<IEdge.Side, IFace> Faces => faces;
 
 	public override int GetHashCode() => HashCode.Combine(axis, X, Y);
 
@@ -29,4 +29,8 @@ public class QuadEdge : IEdge
 	{
 		return Equals((object)other);
 	}
+
+	public void AddFace(IEdge.Side side, QuadFace face) => faces.TryAdd(side, face);
+
+	readonly Dictionary<IEdge.Side, IFace> faces = new(IEdge.NUM_SIDES);
 }

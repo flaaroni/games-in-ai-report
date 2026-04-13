@@ -15,11 +15,11 @@ public interface IFace : IEquatable<IFace>, IEquatable<object>
 	/// </summary>
 	public IReadOnlyDictionary<IEdge, IEdge.Side> Edges { get; }
 	/// <summary>
-	/// Represents the neighbors as a dictionary.
-	/// Keys indicates the edge the neighbors share,
-	/// and the value represents the neighbor itself.
+	/// Gets a neighbor for a given edge.
 	/// </summary>
-	public IReadOnlyDictionary<IEdge, IFace> Neighbors { get; }
+	/// <param name="edge">The edge to get the neighbor for.</param>
+	/// <returns>The neighboring face, or null if there isn't one.</returns>
+	public IFace GetNeighbor(IEdge edge);
 	/// <summary>
 	/// Required so this face can be used as a key in a dictionary, and to compare two faces.
 	/// </summary>

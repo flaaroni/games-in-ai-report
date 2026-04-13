@@ -3,46 +3,38 @@ using UnityEngine;
 
 public class QuadFace : IFace
 {
-	public QuadFace(int x, int y, GameObject model)
+	public QuadFace(GameObject model, int x, int y, QuadEdgeFactory factory)
 	{
 		// Setup member variables
 		X = x;
 		Y = y;
 		this.model = model;
 
-		// Setup data structures for edges and neighbors
-		neighbors = new(4);
-
-		// FIXME: do NOT generate a new edge,
-		// but rather, grab it from a collection or factory
-		edges = new(4)
-		{
-			{ new QuadEdge {
-				axis = QuadEdge.Axis.X,
-				X = x,
-				Y = y,
-			}, IEdge.Side.Left },
-			{ new QuadEdge {
-				axis = QuadEdge.Axis.Y,
-				X = x,
-				Y = y,
-			}, IEdge.Side.Right },
-			{ new QuadEdge {
-				axis = QuadEdge.Axis.X,
-				X = x,
-				Y = y + 1,
-			}, IEdge.Side.Right },
-			{ new QuadEdge {
-				axis = QuadEdge.Axis.Y,
-				X = x + 1,
-				Y = y,
-			}, IEdge.Side.Left },
-		};
+		// Generate edges from a factory and add them to the dictionary
+		edges = new(4);
+		AddEdge(factory.GetEdge(QuadEdge.Axis.X, x, y), IEdge.Side.Left);
+		AddEdge(factory.GetEdge(QuadEdge.Axis.Y, x, y), IEdge.Side.Right);
+		AddEdge(factory.GetEdge(QuadEdge.Axis.X, x, y + 1), IEdge.Side.Right);
+		AddEdge(factory.GetEdge(QuadEdge.Axis.Y, x + 1, y), IEdge.Side.Left);
 	}
 
 	public IReadOnlyDictionary<IEdge, IEdge.Side> Edges => edges;
 
-	public IReadOnlyDictionary<IEdge, IFace> Neighbors => neighbors;
+	public IFace GetNeighbor(IEdge edge)
+	{
+		// Attempt to get the edge
+		bool isValidEdge = edges.TryGetValue(edge, out IEdge.Side side);
+		if (!isValidEdge)
+		{
+			return null;
+		}
+
+		// Get the opposite side of the edge (i.e. if it's left, get right, and vice versa)
+		side = (IEdge.Side)((byte)(side + 1) % IEdge.NUM_SIDES);
+
+		// Return the neighbor on the opposite side
+		return edge.Faces.TryGetValue(side, out IFace leftNeighbor) ? leftNeighbor : null;
+	}
 
 	public Material Material
 	{
@@ -52,7 +44,6 @@ public class QuadFace : IFace
 
 	public int X { get; }
 	public int Y { get; }
-	public bool AddNeighbor(QuadEdge edge, QuadFace neighbor) => neighbors.TryAdd(edge, neighbor);
 
 	public override int GetHashCode() => model.GetHashCode();
 
@@ -70,22 +61,27 @@ public class QuadFace : IFace
 		return Equals((object)other);
 	}
 
+	protected void AddEdge(QuadEdge edge, IEdge.Side side)
+	{
+		edges.Add(edge, side);
+		edge.AddFace(side, this);
+	}
+
 	protected MeshRenderer Renderer
 	{
 		get
 		{
 			// Cache the renderer reference for later use
-			if (renderer == null)
+			if (rendererCache == null)
 			{
-				renderer = model.GetComponent<MeshRenderer>();
+				rendererCache = model.GetComponent<MeshRenderer>();
 			}
-			return renderer;
+			return rendererCache;
 		}
 	}
 
 	// Member variables
-	MeshRenderer renderer;
+	MeshRenderer rendererCache;
 	readonly GameObject model;
 	readonly Dictionary<IEdge, IEdge.Side> edges;
-	readonly Dictionary<IEdge, IFace> neighbors;
 }
