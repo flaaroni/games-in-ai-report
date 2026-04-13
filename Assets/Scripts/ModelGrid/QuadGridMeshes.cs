@@ -160,7 +160,7 @@ public class QuadGridMeshes : ScriptableObject, IGridGenerator
 				faces.Add(newFace);
 
 				// Update edges list
-				edges.AddRange(newFace.Edges.Keys);
+				edges.UnionWith(newFace.Edges.Keys);
 			}
 		}
 	}
