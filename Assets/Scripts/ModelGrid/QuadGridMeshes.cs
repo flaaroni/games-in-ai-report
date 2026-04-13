@@ -1,7 +1,6 @@
 using ProceduralToolkit;
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "QuadGrid.asset", menuName = "AI in Games/Quad Grid", order = 2)]
@@ -17,12 +16,7 @@ public class QuadGridMeshes : ScriptableObject, IGridGenerator
 	[SerializeField]
 	GridDimensions dimensions;
 
-	[Header("Render")]
-	[SerializeField]
 	Mesh[,] subMeshes;
-	[SerializeField]
-	Material[] allMaterials;
-
 	QuadEdgeFactory edgeFactory;
 
 	public int XUnits
@@ -35,7 +29,6 @@ public class QuadGridMeshes : ScriptableObject, IGridGenerator
 		get => yUnits;
 		set => yUnits = value;
 	}
-	public Material[] AllMaterials => allMaterials;
 	public GridDimensions Dimensions => dimensions;
 	public QuadEdgeFactory EdgeFactory
 	{
