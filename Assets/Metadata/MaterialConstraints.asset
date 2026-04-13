@@ -14,6 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Constraints
   touchingMaterials:
   - left: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
+    right: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
+  - left: {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}
+    right: {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}
+  - left: {fileID: 2100000, guid: ea2af0dfc1e8f7f4e80edb4b88fa7b1a, type: 2}
+    right: {fileID: 2100000, guid: ea2af0dfc1e8f7f4e80edb4b88fa7b1a, type: 2}
+  - left: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
     right: {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}
   - left: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
     right: {fileID: 2100000, guid: ea2af0dfc1e8f7f4e80edb4b88fa7b1a, type: 2}
