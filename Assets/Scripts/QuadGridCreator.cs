@@ -1,20 +1,22 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class QuadGridCreator : MonoBehaviour
 {
 	public class QuadGridEventArgs : EventArgs
 	{
-		public QuadGridEventArgs(QuadGridCreator source, QuadFace[,] faces)
+		public QuadGridEventArgs(QuadGridCreator source, IEnumerable<IEdge> edges, IEnumerable<IFace> faces)
 		{
 			Source = source;
+			Edges = edges;
 			Faces = faces;
 		}
 
 		public QuadGridCreator Source { get; }
-		public QuadFace[,] Faces { get; }
-		public Material[] AllMaterials => Source.grid.AllMaterials;
+		public IEnumerable<IEdge> Edges { get; }
+		public IEnumerable<IFace> Faces { get; }
 	}
 
 	public event Action<QuadGridEventArgs> OnMeshGenerated;
@@ -28,11 +30,6 @@ public class QuadGridCreator : MonoBehaviour
 	[SerializeField]
 	GameObject modelPrefab;
 
-	[Header("Debug")]
-	[SerializeField]
-	[Range(0f, 1f)]
-	float delaySeconds = 0f;
-
 	IEnumerator Start()
 	{
 		if (!grid.IsValid())
@@ -41,11 +38,8 @@ public class QuadGridCreator : MonoBehaviour
 			yield break;
 		}
 
-		QuadFace[,] faces = grid.GenerateGrid(transform, groupPrefab, modelPrefab);
-		if (delaySeconds > float.Epsilon)
-		{
-			yield return new WaitForSeconds(delaySeconds);
-		}
-		OnMeshGenerated?.Invoke(new QuadGridEventArgs(this, faces));
+		// Run the generator
+		(IEnumerable<IEdge> edges, IEnumerable<IFace> faces) = grid.Generate(transform, groupPrefab, modelPrefab);
+		OnMeshGenerated?.Invoke(new QuadGridEventArgs(this, edges, faces));
 	}
 }
