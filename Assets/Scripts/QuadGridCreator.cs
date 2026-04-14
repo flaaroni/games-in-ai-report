@@ -43,13 +43,19 @@ public class QuadGridCreator : MonoBehaviour
 
 	ModelSynthesis modelSynthesis;
 
-	IEnumerator Start()
+	void Start()
+	{
+		Generate();
+	}
+
+	[ContextMenu("Regenerate")]
+	void Generate()
 	{
 		grid.Setup(xUnits, yUnits);
 		if (!grid.IsValid())
 		{
 			Debug.LogError("Invalid grid configuration. Please check the dimensions and materials.");
-			yield break;
+			return;
 		}
 
 		// Run the generator
@@ -57,5 +63,12 @@ public class QuadGridCreator : MonoBehaviour
 		modelSynthesis = new ModelSynthesis(faces, constraints);
 		modelSynthesis.Generate();
 		OnMeshGenerated?.Invoke(new QuadGridEventArgs(this, edges, faces));
+	}
+
+	[ContextMenu("Perform Wave Function Collapse")]
+	void WaveFunctionCollapse()
+	{
+		modelSynthesis.Reset();
+		modelSynthesis.Generate();
 	}
 }
