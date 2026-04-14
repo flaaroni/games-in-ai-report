@@ -74,7 +74,7 @@ public class QuadGridMeshes : IGridMeshes
 		return true;
 	}
 
-	public override IEnumerable<IFace> Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab)
+	public override ICollection<IFace> Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab)
 	{
 		// Setup return variables
 		List<IFace> toReturn = new List<IFace>(XUnits * YUnits);
@@ -152,7 +152,7 @@ public class QuadGridMeshes : IGridMeshes
 
 		// Retrieve the mesh filter
 		MeshFilter meshFilter = modelClone.GetComponent<MeshFilter>();
-		meshFilter.mesh = SubMeshes[x, y];
+		meshFilter.mesh = SubMeshes[0, 0];
 
 		// Create a QuadFace for this grid cell and store it in the return array
 		return new QuadFace(modelClone, x, y);

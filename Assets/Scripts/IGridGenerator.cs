@@ -21,5 +21,5 @@ public interface IGridGenerator
 	/// <param name="groupPrefab"></param>
 	/// <param name="modelPrefab"></param>
 	/// <returns></returns>
-	public IEnumerable<IFace> Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab);
+	public ICollection<IFace> Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab);
 }
