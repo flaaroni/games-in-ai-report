@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public interface IDimension
 	/// <summary>
 	/// Length of the dimension's vector.
 	/// </summary>
+	[Obsolete("Turn into an array")]
 	public float Length
 	{
 		get;
@@ -21,6 +23,7 @@ public interface IDimension
 	/// <summary>
 	/// The fraction of the dimension's length at which to subdivide the grid.
 	/// </summary>
+	[Obsolete("Get rid of subdivisions")]
 	public ICollection<float> Subdivisions
 	{
 		get;

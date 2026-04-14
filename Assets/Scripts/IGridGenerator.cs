@@ -15,11 +15,11 @@ public interface IGridGenerator
 	/// <returns></returns>
 	public bool IsValid();
 	/// <summary>
-	/// Generates a grid with a list of edges and faces.
+	/// Generates a grid with an iterator of faces.
 	/// </summary>
 	/// <param name="parent"></param>
 	/// <param name="groupPrefab"></param>
 	/// <param name="modelPrefab"></param>
 	/// <returns></returns>
-	public (IEnumerable<IEdge> edges, IEnumerable<IFace> faces) Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab);
+	public IEnumerable<IFace> Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab);
 }

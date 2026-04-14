@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -9,16 +10,20 @@ public class GridDimensions : ScriptableObject
 	[System.Serializable]
 	public class XDimension : IDimension
 	{
+		[Obsolete("Change to array")]
 		[SerializeField]
 		[Range(0.1f, 10f)]
 		[FormerlySerializedAs("gap")]
 		float length = 1;
 
+		[Obsolete("Get rid of subdivisions")]
 		[SerializeField]
 		[Range(0.1f, 0.9f)]
 		float[] subdivisions = new float[] { };
 
+		[Obsolete("Change to arrays")]
 		public float Length => length;
+		[Obsolete("Get rid of subdivisions")]
 		public ICollection<float> Subdivisions => subdivisions;
 		public virtual float Angle => 0f;
 		public virtual Vector2 GetVector() => new Vector2(Length, 0f);
