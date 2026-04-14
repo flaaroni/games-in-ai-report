@@ -42,7 +42,7 @@ public class QuadGridCreator : MonoBehaviour
 		}
 
 		// Run the generator
-		IEnumerable<IFace> faces = grid.Generate(transform, groupPrefab, modelPrefab);
+		ICollection<IFace> faces = grid.Generate(transform, groupPrefab, modelPrefab);
 		modelSynthesis = new ModelSynthesis(faces, constraints);
 		modelSynthesis.Generate();
 	}
