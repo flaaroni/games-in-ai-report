@@ -2,17 +2,22 @@ using ProceduralToolkit;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class QuadFace : IFace
+public class MeshFace : IFace
 {
-	public QuadFace(GameObject prefab, Transform parent, params Vector3[] verticesClockwise)
+	public MeshFace(GameObject prefab, Transform parent, params Vector3[] verticesClockwise)
 	{
+		if (verticesClockwise.Length < 3)
+		{
+			throw new System.ArgumentException($"Expected at least 3 vertices to define a face, but received {verticesClockwise.Length}");
+		}
+
 		// Setup member variables
 		this.prefab = prefab;
 		this.parent = parent;
 		this.verticesClockwise = verticesClockwise;
 
 		// Generate edges from a factory and add them to the dictionary
-		neighbors = new HashSet<QuadFace>(4);
+		neighbors = new HashSet<MeshFace>(4);
 	}
 
 	public Material Material
@@ -28,15 +33,16 @@ public class QuadFace : IFace
 		}
 	}
 
-	public void AddNeighbor(QuadFace face)
+	public void AddNeighbor(MeshFace face)
 	{
+		// Enforce two-way neighbor relationship
 		neighbors.Add(face);
 		face.neighbors.Add(this);
 	}
 
 	public IEnumerable<IFace> GetNeighbors()
 	{
-		foreach (QuadFace toReturn in neighbors)
+		foreach (MeshFace toReturn in neighbors)
 		{
 			yield return toReturn;
 		}
@@ -77,5 +83,5 @@ public class QuadFace : IFace
 	Transform parent;
 	Material setMaterial;
 	Vector3[] verticesClockwise;
-	readonly ISet<QuadFace> neighbors;
+	readonly ISet<MeshFace> neighbors;
 }

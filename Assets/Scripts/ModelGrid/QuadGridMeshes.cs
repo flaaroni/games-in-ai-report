@@ -77,16 +77,16 @@ public class QuadGridMeshes : IGridMeshes
 				// Create a mesh for this grid element
 				Vector2 xEnd = Dimensions.X.GetVector(x + 1) - Dimensions.X.GetVector(x),
 					yEnd = Dimensions.Y.GetVector(y + 1) - Dimensions.Y.GetVector(y);
-				QuadFace newFace = new QuadFace(modelPrefab, groupClone.transform, Vector2.zero, yEnd, (xEnd + yEnd), xEnd);
+				MeshFace newFace = new MeshFace(modelPrefab, groupClone.transform, Vector2.zero, yEnd, (xEnd + yEnd), xEnd);
 
 				// Add neighbors to this face
 				if (x > 0)
 				{
-					newFace.AddNeighbor((QuadFace)toReturn[toReturn.Count - 1]);
+					newFace.AddNeighbor((MeshFace)toReturn[toReturn.Count - 1]);
 				}
 				if (y > 0)
 				{
-					newFace.AddNeighbor((QuadFace)toReturn[toReturn.Count - XUnits]);
+					newFace.AddNeighbor((MeshFace)toReturn[toReturn.Count - XUnits]);
 				}
 
 				// Add face to the return list
