@@ -7,7 +7,7 @@ public interface IFace : IEquatable<IFace>, IEquatable<object>
 	/// <summary>
 	/// Sets the material of this face
 	/// </summary>
-	public Material Material { set; }
+	public Material Material { get; set; }
 	/// <summary>
 	/// Represents the edges creating this face as a dictionary.
 	/// Keys indicates the edge index, and the value represents
@@ -25,4 +25,15 @@ public interface IFace : IEquatable<IFace>, IEquatable<object>
 	/// </summary>
 	/// <returns></returns>
 	public int GetHashCode();
+}
+
+public static class IFaceExtension
+{
+	public static IEnumerable<IFace> GetNeighbors(this IFace face)
+	{
+		foreach (var edge in face.Edges.Keys)
+		{
+			yield return face.GetNeighbor(edge);
+		}
+	}
 }
