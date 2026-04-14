@@ -16,9 +16,6 @@ public class QuadGridMeshes : IGridMeshes
 	[SerializeField]
 	GridDimensions dimensions;
 
-	Mesh[,] subMeshes;
-	QuadEdgeFactory edgeFactory;
-
 	public int XUnits
 	{
 		get => xUnits;
@@ -30,31 +27,6 @@ public class QuadGridMeshes : IGridMeshes
 		set => yUnits = Mathf.Max(value, 1);
 	}
 	public GridDimensions Dimensions => dimensions;
-	public QuadEdgeFactory EdgeFactory
-	{
-		get
-		{
-			if (edgeFactory == null)
-			{
-				edgeFactory = new QuadEdgeFactory(XUnits, YUnits);
-			}
-			return edgeFactory;
-		}
-	}
-
-	public Mesh[,] SubMeshes
-	{
-		get
-		{
-			if ((subMeshes == null)
-				|| (subMeshes.GetLength(0) != XSubdivisions)
-				|| (subMeshes.GetLength(1) != YSubdivisions))
-			{
-				subMeshes = GenerateSubMeshes();
-			}
-			return subMeshes;
-		}
-	}
 
 	public override void Setup(params int[] numUnitsPerAxis)
 	{
@@ -73,24 +45,13 @@ public class QuadGridMeshes : IGridMeshes
 		{
 			return false;
 		}
-		for (int y = 0; y < SubMeshes.GetLength(1); ++y)
-		{
-			for (int x = 0; x < SubMeshes.GetLength(0); ++x)
-			{
-				if (SubMeshes[x, y] == null)
-				{
-					return false;
-				}
-			}
-		}
 		return true;
 	}
 
-	public override (IEnumerable<IEdge> edges, IEnumerable<IFace> faces) Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab)
+	public override ICollection<IFace> Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab)
 	{
 		// Setup return variables
-		HashSet<IEdge> edges = new HashSet<IEdge>((XUnits * XSubdivisions) * (YUnits * YSubdivisions));
-		HashSet<IFace> faces = new HashSet<IFace>((XUnits * XSubdivisions) * (YUnits * YSubdivisions));
+		List<IFace> toReturn = new List<IFace>(XUnits * YUnits);
 
 		// Destroy all existing children on the parent transform
 		foreach (Transform child in parent)
@@ -115,15 +76,24 @@ public class QuadGridMeshes : IGridMeshes
 				groupClone.name = $"Grid Element ({x}, {y})";
 
 				// Create a mesh for this grid element
-				GenerateGridCell(groupClone.transform, modelPrefab, (x * XSubdivisions), (y * YSubdivisions)
-					, ref edges, ref faces);
+				QuadFace newFace = GenerateGridCell(groupClone.transform, modelPrefab, x, y);
+
+				// Add neighbors to this face
+				if (x > 0)
+				{
+					newFace.AddNeighbor((QuadFace)toReturn[toReturn.Count - 1]);
+				}
+				if (y > 0)
+				{
+					newFace.AddNeighbor((QuadFace)toReturn[toReturn.Count - XUnits]);
+				}
+
+				// Add face to the return list
+				toReturn.Add(newFace);
 			}
 		}
-		return (edges, faces);
+		return toReturn;
 	}
-
-	int XSubdivisions => Dimensions.X.NumSubdivisions() + 1;
-	int YSubdivisions => Dimensions.Y.NumSubdivisions() + 1;
 
 	/// <summary>
 	/// Calculates the position of a vertex in a quadrilateral grid based on the specified x and y indices.
@@ -136,53 +106,26 @@ public class QuadGridMeshes : IGridMeshes
 		return Dimensions.X.GetVector(x) + Dimensions.Y.GetVector(y);
 	}
 
-	void GenerateGridCell(Transform parent, GameObject modelPrefab, int xOffset, int yOffset, ref HashSet<IEdge> edges, ref HashSet<IFace> faces)
+	QuadFace GenerateGridCell(Transform parent, GameObject modelPrefab, int x, int y)
 	{
-		// Go through all subdivisions of the grid cell
-		for (int y = 0; y < YSubdivisions; ++y)
-		{
-			for (int x = 0; x < XSubdivisions; ++x)
-			{
-				// Create a mesh for this grid cell
-				GameObject modelClone = Instantiate(modelPrefab, parent);
+		// Create a mesh for this grid cell
+		GameObject modelClone = Instantiate(modelPrefab, parent);
 
-				// Reset the model's transform
-				modelClone.transform.localPosition = Vector3.zero;
-				modelClone.transform.localRotation = Quaternion.identity;
-				modelClone.transform.localScale = Vector3.one;
+		// Reset the model's transform
+		modelClone.transform.localPosition = Vector3.zero;
+		modelClone.transform.localRotation = Quaternion.identity;
+		modelClone.transform.localScale = Vector3.one;
 
-				// Name the model
-				modelClone.name = $"SubMesh ({x}, {y})";
+		// Name the model
+		modelClone.name = $"SubMesh ({x}, {y})";
 
-				// Retrieve the mesh filter
-				MeshFilter meshFilter = modelClone.GetComponent<MeshFilter>();
-				meshFilter.mesh = SubMeshes[x, y];
+		// Retrieve the mesh filter
+		MeshFilter meshFilter = modelClone.GetComponent<MeshFilter>();
+		Vector2 xEnd = Dimensions.X.GetVector(x + 1) - Dimensions.X.GetVector(x),
+			yEnd = Dimensions.Y.GetVector(y + 1) - Dimensions.Y.GetVector(y);
+		meshFilter.mesh = MeshDraft.Quad(Vector2.zero, yEnd, (xEnd + yEnd), xEnd).ToMesh();
 
-				// Create a QuadFace for this grid cell and store it in the return array
-				int faceX = (xOffset + x), faceY = (yOffset + y);
-				QuadFace newFace = new QuadFace(modelClone, faceX, faceY, EdgeFactory);
-				faces.Add(newFace);
-
-				// Update edges list
-				edges.UnionWith(newFace.Edges.Keys);
-			}
-		}
-	}
-
-	Mesh[,] GenerateSubMeshes()
-	{
-		// Go through all subdivisions of the grid cell
-		Mesh[,] toReturn = new Mesh[XSubdivisions, YSubdivisions];
-		for (int y = 0; y < YSubdivisions; ++y)
-		{
-			for (int x = 0; x < XSubdivisions; ++x)
-			{
-				// Generate vertices in clockwise direction for quads
-				var (xStart, xEnd) = Dimensions.X.GetSubVector(x);
-				var (yStart, yEnd) = Dimensions.Y.GetSubVector(y);
-				toReturn[x, y] = MeshDraft.Quad((xStart + yStart), (xStart + yEnd), (xEnd + yEnd), (xEnd + yStart)).ToMesh();
-			}
-		}
-		return toReturn;
+		// Create a QuadFace for this grid cell and store it in the return array
+		return new QuadFace(modelClone, x, y);
 	}
 }

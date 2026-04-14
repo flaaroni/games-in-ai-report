@@ -12,15 +12,15 @@ public class ModelSynthesis
 	readonly HashSet<IFace> unObservedFaces;
 	readonly Dictionary<IFace, HashSet<Material>> faceToPossibleMaterials;
 
-	public ModelSynthesis(IEnumerable<IFace> faces, Constraints constraints)
+	public ModelSynthesis(ICollection<IFace> faces, Constraints constraints)
 	{
 		// First, compute the constraints
 		this.constraints = constraints;
 		allMaterials = constraints.GetMaterials();
 
 		// Add all faces with all possible materials to the list
-		unObservedFaces = new();
-		faceToPossibleMaterials = new();
+		unObservedFaces = new(faces.Count);
+		faceToPossibleMaterials = new(faces.Count);
 		foreach (IFace face in faces)
 		{
 			unObservedFaces.Add(face);
@@ -134,8 +134,16 @@ public class ModelSynthesis
 				possibleNeighborMaterials.UnionWith(constraints.GetTouchingMaterials(material));
 			}
 
+			// Check if this is all materials
+			if (possibleNeighborMaterials.Count == allMaterials.Count)
+			{
+				// If so, skip further processing
+				// There's no data to propogate to neighbors
+				continue;
+			}
+
 			// Go through all neighbors
-			foreach(IFace neighbor in checkFace.GetNeighbors())
+			foreach (IFace neighbor in checkFace.GetNeighbors())
 			{
 				// If the neighbor is already visited, skip it
 				if (!visitedFaces.Add(neighbor))
