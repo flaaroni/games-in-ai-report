@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "QuadGrid.asset", menuName = "AI in Games/Quad Grid", order = 2)]
-public class QuadGridMeshes : ScriptableObject, IGridGenerator
+public class QuadGridMeshes : IGridMeshes
 {
 	[Header("Settings")]
 	[SerializeField]
@@ -22,12 +22,12 @@ public class QuadGridMeshes : ScriptableObject, IGridGenerator
 	public int XUnits
 	{
 		get => xUnits;
-		set => xUnits = value;
+		set => xUnits = Mathf.Max(value, 1);
 	}
 	public int YUnits
 	{
 		get => yUnits;
-		set => yUnits = value;
+		set => yUnits = Mathf.Max(value, 1);
 	}
 	public GridDimensions Dimensions => dimensions;
 	public QuadEdgeFactory EdgeFactory
@@ -56,7 +56,18 @@ public class QuadGridMeshes : ScriptableObject, IGridGenerator
 		}
 	}
 
-	public bool IsValid()
+	public override void Setup(params int[] numUnitsPerAxis)
+	{
+		if (numUnitsPerAxis.Length != 2)
+		{
+			throw new ArgumentException($"Expected 2 parameters for number of units per axis, but received {numUnitsPerAxis.Length}");
+		}
+
+		XUnits = numUnitsPerAxis[0];
+		YUnits = numUnitsPerAxis[0];
+	}
+
+	public override bool IsValid()
 	{
 		if (dimensions == null)
 		{
@@ -75,7 +86,7 @@ public class QuadGridMeshes : ScriptableObject, IGridGenerator
 		return true;
 	}
 
-	public (IEnumerable<IEdge> edges, IEnumerable<IFace> faces) Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab)
+	public override (IEnumerable<IEdge> edges, IEnumerable<IFace> faces) Generate(Transform parent, GameObject groupPrefab, GameObject modelPrefab)
 	{
 		// Setup return variables
 		HashSet<IEdge> edges = new HashSet<IEdge>((XUnits * XSubdivisions) * (YUnits * YSubdivisions));
