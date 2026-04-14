@@ -134,8 +134,16 @@ public class ModelSynthesis
 				possibleNeighborMaterials.UnionWith(constraints.GetTouchingMaterials(material));
 			}
 
+			// Check if this is all materials
+			if (possibleNeighborMaterials.Count == allMaterials.Count)
+			{
+				// If so, skip further processing
+				// There's no data to propogate to neighbors
+				continue;
+			}
+
 			// Go through all neighbors
-			foreach(IFace neighbor in checkFace.GetNeighbors())
+			foreach (IFace neighbor in checkFace.GetNeighbors())
 			{
 				// If the neighbor is already visited, skip it
 				if (!visitedFaces.Add(neighbor))
