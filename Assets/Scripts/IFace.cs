@@ -18,4 +18,8 @@ public interface IFace : IEquatable<object>
 	/// </summary>
 	/// <returns></returns>
 	public int GetHashCode();
+	/// <summary>
+	/// Generates the mesh if <see cref="Material"/> is not null.
+	/// </summary>
+	public void GenerateMesh();
 }

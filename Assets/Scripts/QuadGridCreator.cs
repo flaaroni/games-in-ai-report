@@ -41,16 +41,21 @@ public class QuadGridCreator : MonoBehaviour
 			return;
 		}
 
+		// Destroy all prior game objects
+		foreach (Transform child in transform)
+		{
+			Destroy(child.gameObject);
+		}
+
 		// Run the generator
 		ICollection<IFace> faces = grid.Generate(transform, groupPrefab, modelPrefab);
 		modelSynthesis = new ModelSynthesis(faces, constraints);
 		modelSynthesis.Generate();
-	}
 
-	[ContextMenu("Perform Wave Function Collapse")]
-	void WaveFunctionCollapse()
-	{
-		modelSynthesis.Reset();
-		modelSynthesis.Generate();
+		// Generate all faces
+		foreach (IFace face in faces)
+		{
+			face.GenerateMesh();
+		}
 	}
 }
