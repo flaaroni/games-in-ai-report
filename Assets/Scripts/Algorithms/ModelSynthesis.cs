@@ -4,48 +4,19 @@ using UnityEngine;
 
 public class ModelSynthesis
 {
-	//class MaterialPair
-	//{
-	//	public Material left;
-	//	public Material right;
-	//}
-
 	// Constraints-related fields
 	readonly IReadOnlyList<Material> allMaterials;
-	//readonly List<MaterialPair> allValidPairs;
 	readonly Constraints constraints;
 
 	// Possibility spaces
-	//readonly HashSet<IEdge> unObservedEdges;
-	//readonly Dictionary<IEdge, HashSet<MaterialPair>> edgeToPossibleMaterials;
 	readonly HashSet<IFace> unObservedFaces;
 	readonly Dictionary<IFace, HashSet<Material>> faceToPossibleMaterials;
 
-	public ModelSynthesis(IEnumerable<IEdge> edges, IEnumerable<IFace> faces, Constraints constraints)
+	public ModelSynthesis(IEnumerable<IFace> faces, Constraints constraints)
 	{
 		// First, compute the constraints
 		this.constraints = constraints;
 		allMaterials = constraints.GetMaterials();
-
-		// Compute all the valid pairs of materials for edges
-		//allValidPairs = new();
-		//foreach (Material left in allMaterials)
-		//{
-		//	ISet<Material> rightMaterials = constraints.GetTouchingMaterials(left);
-		//	foreach (Material right in rightMaterials)
-		//	{
-		//		allValidPairs.Add(new MaterialPair() { left = left, right = right });
-		//	}
-		//}
-
-		// Add all edges with all possible materials to the list
-		//unObservedEdges = new();
-		//edgeToPossibleMaterials = new();
-		//foreach (IEdge edge in edges)
-		//{
-		//	unObservedEdges.Add(edge);
-		//	edgeToPossibleMaterials.Add(edge, new HashSet<MaterialPair>(allValidPairs));
-		//}
 
 		// Add all faces with all possible materials to the list
 		unObservedFaces = new();
@@ -59,13 +30,7 @@ public class ModelSynthesis
 
 	public void Reset()
 	{
-		// Reset the list of unobserved edges and possible materials for each edge and face
-		//unObservedEdges.Clear();
-		//foreach ((IEdge edge, HashSet<MaterialPair> materials) in edgeToPossibleMaterials)
-		//{
-		//	unObservedEdges.Add(edge);
-		//	materials.UnionWith(allValidPairs);
-		//}
+		// Reset the list of unobserved faces and possible materials for each face
 		unObservedFaces.Clear();
 		foreach ((IFace face, HashSet<Material> materials) in faceToPossibleMaterials)
 		{
@@ -78,22 +43,26 @@ public class ModelSynthesis
 	{
 		while (unObservedFaces.Count > 0)
 		{
-			// Choose a random edge to collapse
+			// Choose a random face (with the lowest number of possibilities) to collapse
 			IFace face = GetRandomFace();
 
-			// Collapse the edge
-			CollapseFace(face);
+			// Get all the possibilities for this face
+			HashSet<Material> possibleMaterials = faceToPossibleMaterials[face];
+
+			// Choose a random material from the possibilities
+			Material observedMaterial = possibleMaterials.ElementAt(Random.Range(0, possibleMaterials.Count));
+
+			// Update the possibility dictionary
+			possibleMaterials.Clear();
+			possibleMaterials.Add(observedMaterial);
 
 			// Recursively propogate the constraints to neighboring edges and faces
-			if(!PropogateChanges(face))
+			if (!PropogateChanges(face))
 			{
 				// If propogating changes failed, restart
 				Reset();
 				continue;
 			}
-
-			// FIXME: breaking out of the loop for debugging the first step
-			break;
 		}
 	}
 
@@ -122,22 +91,6 @@ public class ModelSynthesis
 		return toReturn[Random.Range(0, toReturn.Count)];
 	}
 
-	Material CollapseFace(IFace face)
-	{
-		// Get all the possibilities for this edge
-		HashSet<Material> possibleMaterials = faceToPossibleMaterials[face];
-
-		// Choose a random material from the possibilities
-		Material observedMaterial = possibleMaterials.ElementAt(Random.Range(0, possibleMaterials.Count));
-
-		// Update the possibility dictionary
-		possibleMaterials.Clear();
-		possibleMaterials.Add(observedMaterial);
-
-		// Return the observed material
-		return observedMaterial;
-	}
-
 	bool PropogateChanges(IFace face)
 	{
 		// Setup a list of edges that are already visited
@@ -150,21 +103,17 @@ public class ModelSynthesis
 		{
 			// Dequeue, and make sure we haven't visited this face, yet
 			IFace checkFace = faceQueue.Dequeue();
-			if (visitedFaces.Contains(checkFace))
+			if (!visitedFaces.Add(checkFace))
 			{
 				// If we have visited this face, skip it
 				continue;
 			}
 
-			// If not, mark this face as visited
-			visitedFaces.Add(checkFace);
-
 			// Make sure there are still possibilities for this face
 			var possibilities = faceToPossibleMaterials[checkFace];
 			if (possibilities.Count == 0)
 			{
-				// If not, halt immediately
-				// Indicate failure of propogation
+				// If not, indicate failure of propogation
 				return false;
 			}
 
@@ -189,7 +138,7 @@ public class ModelSynthesis
 			foreach(IFace neighbor in checkFace.GetNeighbors())
 			{
 				// If the neighbor is already visited, skip it
-				if (visitedFaces.Contains(neighbor))
+				if (!visitedFaces.Add(neighbor))
 				{
 					continue;
 				}
@@ -203,21 +152,4 @@ public class ModelSynthesis
 		}
 		return true;
 	}
-
-	//void CollapseEdgeFace(IEdge edge, IEdge.Side side, Material material)
-	//{
-	//	// Check if there's a face on the specified side
-	//	if (!edge.Faces.TryGetValue(side, out IFace face))
-	//	{
-	//		return;
-	//	}
-
-	//	// If so, set the material
-	//	face.Material = material;
-
-	//	// Update the dictionary of possibilities
-	//	HashSet<Material> faceMaterials = faceToPossibleMaterials[face];
-	//	faceMaterials.Clear();
-	//	faceMaterials.Add(material);
-	//}
 }

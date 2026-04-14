@@ -54,7 +54,7 @@ public class QuadGridCreator : MonoBehaviour
 
 		// Run the generator
 		(IEnumerable<IEdge> edges, IEnumerable<IFace> faces) = grid.Generate(transform, groupPrefab, modelPrefab);
-		modelSynthesis = new ModelSynthesis(edges, faces, constraints);
+		modelSynthesis = new ModelSynthesis(faces, constraints);
 		modelSynthesis.Generate();
 		OnMeshGenerated?.Invoke(new QuadGridEventArgs(this, edges, faces));
 	}

@@ -33,7 +33,11 @@ public static class IFaceExtension
 	{
 		foreach (var edge in face.Edges.Keys)
 		{
-			yield return face.GetNeighbor(edge);
+			IFace neighbor = face.GetNeighbor(edge);
+			if (neighbor != null)
+			{
+				yield return neighbor;
+			}
 		}
 	}
 }
