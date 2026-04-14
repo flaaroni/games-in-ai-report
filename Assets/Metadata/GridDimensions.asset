@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: GridDimensions
   m_EditorClassIdentifier: Assembly-CSharp::ModelGrid
   xDimension:
-    length: 1
-    subdivisions: []
+    firstLength: 1
+    loopingLengths:
+    - 0.5
   yDimension:
-    length: 1
-    subdivisions: []
+    firstLength: 1
+    loopingLengths:
+    - 0.75
     angle: 90
-  zDimension:
-    subdivisions: []
