@@ -21,8 +21,13 @@ public class QuadGridCreator : MonoBehaviour
 
 	public event Action<QuadGridEventArgs> OnMeshGenerated;
 
+	[Header("Grid Size")]
 	[SerializeField]
-	QuadGridMeshes grid;
+	[Range(1, 10)]
+	int xUnits = 3;
+	[SerializeField]
+	[Range(1, 10)]
+	int yUnits = 3;
 
 	[Header("Generator")]
 	[SerializeField]
@@ -30,8 +35,17 @@ public class QuadGridCreator : MonoBehaviour
 	[SerializeField]
 	GameObject modelPrefab;
 
+	[Header("Metadata")]
+	[SerializeField]
+	IGridMeshes grid;
+	[SerializeField]
+	Constraints constraints;
+
+	ModelSynthesis modelSynthesis;
+
 	IEnumerator Start()
 	{
+		grid.Setup(xUnits, yUnits);
 		if (!grid.IsValid())
 		{
 			Debug.LogError("Invalid grid configuration. Please check the dimensions and materials.");
@@ -40,6 +54,8 @@ public class QuadGridCreator : MonoBehaviour
 
 		// Run the generator
 		(IEnumerable<IEdge> edges, IEnumerable<IFace> faces) = grid.Generate(transform, groupPrefab, modelPrefab);
+		modelSynthesis = new ModelSynthesis(edges, faces, constraints);
+		modelSynthesis.Generate();
 		OnMeshGenerated?.Invoke(new QuadGridEventArgs(this, edges, faces));
 	}
 }
