@@ -71,8 +71,7 @@ public class ModelSynthesis
 
 	public void Generate()
 	{
-		bool isGenerating = true;
-		do
+		while (unObservedEdges.Count > 0)
 		{
 			// Choose a random edge to collapse
 			IEdge edge = GetRandomEdge();
@@ -83,20 +82,40 @@ public class ModelSynthesis
 			// Remove the edge
 			unObservedEdges.Remove(edge);
 
-			// FIXME: update the faces of the edge
+			// Update the faces of the edge
+			CollapseEdgeFace(edge, IEdge.Side.Left, observedPair.left);
+			CollapseEdgeFace(edge, IEdge.Side.Right, observedPair.right);
+
 			// FIXME: recursively propogate the constraints to neighboring edges and faces
 
-			// FIXME: confirm all edges and face still has at least 1 possible material
+			// Confirm all edges and face still has at least 1 possible material
 			// , otherwise reset and start over
-			isGenerating = false;
+			foreach (HashSet<MaterialPair> values in edgeToPossibleMaterials.Values)
+			{
+				if (values.Count == 0)
+				{
+					Reset();
+					continue;
+				}
+			}
+			foreach (HashSet<Material> values in faceToPossibleMaterials.Values)
+			{
+				if (values.Count == 0)
+				{
+					Reset();
+					continue;
+				}
+			}
+
+			// FIXME: breaking out of the loop for debugging the first step
+			break;
 		}
-		while (isGenerating);
 	}
 
 	IEdge GetRandomEdge()
 	{
 		// First, find the least number of possible materials for any unobserved edge
-		int minPossibilities = allMaterials.Count;
+		int minPossibilities = int.MaxValue;
 		foreach (IEdge edge in unObservedEdges)
 		{
 			int numPossibilities = edgeToPossibleMaterials[edge].Count;
@@ -132,5 +151,18 @@ public class ModelSynthesis
 
 		// Return the observed pair
 		return observedPair;
+	}
+
+	void CollapseEdgeFace(IEdge edge, IEdge.Side side, Material material)
+	{
+		if (edge.Faces.TryGetValue(side, out IFace face))
+		{
+			face.Material = material;
+
+			// Update the dictionary of possibilities
+			HashSet<Material> faceMaterials = faceToPossibleMaterials[face];
+			faceMaterials.Clear();
+			faceMaterials.Add(material);
+		}
 	}
 }
