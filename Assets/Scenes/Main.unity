@@ -392,29 +392,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 539768528}
-  - component: {fileID: 539768527}
   - component: {fileID: 539768529}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: QuadGridCreator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &539768527
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 539768526}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 576f533ceef97e64e91d5ff48b30c12a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WaveFunctionCollapse
-  gridCreator: {fileID: 539768529}
-  delaySeconds: 0
 --- !u!4 &539768528
 Transform:
   m_ObjectHideFlags: 0
@@ -442,10 +427,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29bd4569bdb3cf74880b8a3880f6f3eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeshCreator
-  grid: {fileID: 11400000, guid: 891eb3ae23f38684da944b0af03e7242, type: 2}
+  xUnits: 6
+  yUnits: 6
   groupPrefab: {fileID: 78927017300512827, guid: 6482f2d17092f014f904a61c95cd767e, type: 3}
   modelPrefab: {fileID: 1407033976771013828, guid: 3a1615556ce74754ba537cee7e51eb1f, type: 3}
-  delaySeconds: 0
+  grid: {fileID: 11400000, guid: 891eb3ae23f38684da944b0af03e7242, type: 2}
+  constraints: {fileID: 11400000, guid: c8f2b6f7bc2fa264d94b246c149b779d, type: 2}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
