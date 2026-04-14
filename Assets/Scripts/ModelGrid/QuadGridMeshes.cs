@@ -1,4 +1,3 @@
-using ProceduralToolkit;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,7 +67,7 @@ public class QuadGridMeshes : IGridMeshes
 				GameObject groupClone = Instantiate(groupPrefab, parent);
 
 				// Position the group at the correct location based on the grid dimensions
-				groupClone.transform.localPosition = GetVertex(x, y);
+				groupClone.transform.localPosition = Dimensions.X.GetVector(x) + Dimensions.Y.GetVector(y);
 				groupClone.transform.localRotation = Quaternion.identity;
 				groupClone.transform.localScale = Vector3.one;
 
@@ -76,7 +75,9 @@ public class QuadGridMeshes : IGridMeshes
 				groupClone.name = $"Grid Element ({x}, {y})";
 
 				// Create a mesh for this grid element
-				QuadFace newFace = GenerateGridCell(groupClone.transform, modelPrefab, x, y);
+				Vector2 xEnd = Dimensions.X.GetVector(x + 1) - Dimensions.X.GetVector(x),
+					yEnd = Dimensions.Y.GetVector(y + 1) - Dimensions.Y.GetVector(y);
+				QuadFace newFace = new QuadFace(modelPrefab, groupClone.transform, Vector2.zero, yEnd, (xEnd + yEnd), xEnd);
 
 				// Add neighbors to this face
 				if (x > 0)
@@ -93,39 +94,5 @@ public class QuadGridMeshes : IGridMeshes
 			}
 		}
 		return toReturn;
-	}
-
-	/// <summary>
-	/// Calculates the position of a vertex in a quadrilateral grid based on the specified x and y indices.
-	/// </summary>
-	/// <param name="x">The horizontal index of the vertex within the grid</param>
-	/// <param name="y">The vertical index of the vertex within the grid</param>
-	/// <returns>A Vector2 representing the position of the specified vertex in the grid.</returns>
-	Vector2 GetVertex(int x, int y)
-	{
-		return Dimensions.X.GetVector(x) + Dimensions.Y.GetVector(y);
-	}
-
-	QuadFace GenerateGridCell(Transform parent, GameObject modelPrefab, int x, int y)
-	{
-		// Create a mesh for this grid cell
-		GameObject modelClone = Instantiate(modelPrefab, parent);
-
-		// Reset the model's transform
-		modelClone.transform.localPosition = Vector3.zero;
-		modelClone.transform.localRotation = Quaternion.identity;
-		modelClone.transform.localScale = Vector3.one;
-
-		// Name the model
-		modelClone.name = $"SubMesh ({x}, {y})";
-
-		// Retrieve the mesh filter
-		MeshFilter meshFilter = modelClone.GetComponent<MeshFilter>();
-		Vector2 xEnd = Dimensions.X.GetVector(x + 1) - Dimensions.X.GetVector(x),
-			yEnd = Dimensions.Y.GetVector(y + 1) - Dimensions.Y.GetVector(y);
-		meshFilter.mesh = MeshDraft.Quad(Vector2.zero, yEnd, (xEnd + yEnd), xEnd).ToMesh();
-
-		// Create a QuadFace for this grid cell and store it in the return array
-		return new QuadFace(modelClone, x, y);
 	}
 }

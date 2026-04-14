@@ -19,5 +19,5 @@ MonoBehaviour:
   yDimension:
     firstLength: 1
     loopingLengths:
-    - 0.75
-    angle: 90
+    - 0.25
+    angle: 80

@@ -1,26 +1,31 @@
+using ProceduralToolkit;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class QuadFace : IFace
 {
-	public QuadFace(GameObject model, int x, int y)
+	public QuadFace(GameObject prefab, Transform parent, params Vector3[] verticesClockwise)
 	{
 		// Setup member variables
-		X = x;
-		Y = y;
-		renderer = model.GetComponent<MeshRenderer>();
+		this.prefab = prefab;
+		this.parent = parent;
+		this.verticesClockwise = verticesClockwise;
 
 		// Generate edges from a factory and add them to the dictionary
 		neighbors = new HashSet<QuadFace>(4);
 	}
 
-	public int X { get; }
-	public int Y { get; }
-
 	public Material Material
 	{
-		get => renderer.sharedMaterial;
-		set => renderer.sharedMaterial = value;
+		get => setMaterial;
+		set
+		{
+			setMaterial = value;
+			if (renderer != null)
+			{
+				renderer.sharedMaterial = value;
+			}
+		}
 	}
 
 	public void AddNeighbor(QuadFace face)
@@ -37,18 +42,40 @@ public class QuadFace : IFace
 		}
 	}
 
-	public override int GetHashCode() => renderer.GetHashCode();
-
-	public override bool Equals(object other)
+	public void GenerateMesh()
 	{
-		if (other is QuadFace)
+		if ((renderer != null) || (Material == null))
 		{
-			return renderer == ((QuadFace)other).renderer;
+			return;
 		}
-		return false;
+
+		// Create a mesh for this grid cell
+		GameObject modelClone = Object.Instantiate(prefab, parent);
+
+		// Reset the model's transform
+		modelClone.transform.localPosition = Vector3.zero;
+		modelClone.transform.localRotation = Quaternion.identity;
+		modelClone.transform.localScale = Vector3.one;
+
+		// Generate a new mesh
+		MeshDraft meshDraft = new MeshDraft();
+		meshDraft.AddTriangleFan(verticesClockwise, Vector3.back);
+		Mesh mesh = meshDraft.ToMesh();
+		mesh.name = "QuadFace";
+
+		// Apply to the mesh filter
+		modelClone.GetComponent<MeshFilter>().mesh = mesh;
+
+		// Update the material of the mesh
+		renderer = modelClone.GetComponent<MeshRenderer>();
+		renderer.sharedMaterial = Material;
 	}
 
 	// Member variables
-	readonly MeshRenderer renderer;
+	MeshRenderer renderer;
+	GameObject prefab;
+	Transform parent;
+	Material setMaterial;
+	Vector3[] verticesClockwise;
 	readonly ISet<QuadFace> neighbors;
 }
