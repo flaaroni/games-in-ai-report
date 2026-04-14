@@ -76,17 +76,15 @@ public class ModelSynthesis
 			// Choose a random edge to collapse
 			IEdge edge = GetRandomEdge();
 
-			// FIXME: collapse the edge
+			// Collapse the edge
 			MaterialPair observedPair = CollapseEdge(edge);
 
-			// Remove the edge
-			unObservedEdges.Remove(edge);
-
-			// Update the faces of the edge
-			CollapseEdgeFace(edge, IEdge.Side.Left, observedPair.left);
-			CollapseEdgeFace(edge, IEdge.Side.Right, observedPair.right);
-
-			// FIXME: recursively propogate the constraints to neighboring edges and faces
+			// Recursively propogate the constraints to neighboring edges and faces
+			if(!PropogateChanges(edge))
+			{
+				Reset();
+				continue;
+			}
 
 			// Confirm all edges and face still has at least 1 possible material
 			// , otherwise reset and start over
@@ -153,16 +151,69 @@ public class ModelSynthesis
 		return observedPair;
 	}
 
+	bool PropogateChanges(IEdge collapseEdge)
+	{
+		// Setup a list of edges that are already visited
+		HashSet<IEdge> visitedEdges = new() { collapseEdge };
+
+		// Setup recursion
+		Queue<IEdge> edgeQueue = new();
+		edgeQueue.Enqueue(collapseEdge);
+		while (edgeQueue.Count > 0)
+		{
+			// Check the edge
+			IEdge edge = edgeQueue.Dequeue();
+
+			// Make sure there are still possibilities for this edge
+			var possibilities = edgeToPossibleMaterials[edge];
+			if (possibilities.Count == 0)
+			{
+				return false;
+			}
+
+			// Check if there's only one possibility for this edge
+			if (possibilities.Count == 1)
+			{
+				// Remove the edge
+				unObservedEdges.Remove(edge);
+
+				// Update the faces of the edge
+				var observedPair = possibilities.First();
+				CollapseEdgeFace(edge, IEdge.Side.Left, observedPair.left);
+				CollapseEdgeFace(edge, IEdge.Side.Right, observedPair.right);
+
+				// Add all the edges from the faces
+				foreach (IFace face in edge.Faces.Values)
+				{
+					foreach (IEdge neighborEdge in face.Edges.Keys)
+					{
+						if (!visitedEdges.Contains(neighborEdge))
+						{
+							edgeQueue.Enqueue(neighborEdge);
+							visitedEdges.Add(neighborEdge);
+						}
+					}
+				}
+				continue;
+			}
+		}
+		return true;
+	}
+
 	void CollapseEdgeFace(IEdge edge, IEdge.Side side, Material material)
 	{
-		if (edge.Faces.TryGetValue(side, out IFace face))
+		// Check if there's a face on the specified side
+		if (!edge.Faces.TryGetValue(side, out IFace face))
 		{
-			face.Material = material;
-
-			// Update the dictionary of possibilities
-			HashSet<Material> faceMaterials = faceToPossibleMaterials[face];
-			faceMaterials.Clear();
-			faceMaterials.Add(material);
+			return;
 		}
+
+		// If so, set the material
+		face.Material = material;
+
+		// Update the dictionary of possibilities
+		HashSet<Material> faceMaterials = faceToPossibleMaterials[face];
+		faceMaterials.Clear();
+		faceMaterials.Add(material);
 	}
 }
