@@ -121,8 +121,8 @@ public class QuadGridMeshes : IGridMeshes
 
 		// Retrieve the mesh filter
 		MeshFilter meshFilter = modelClone.GetComponent<MeshFilter>();
-		Vector2 xEnd = Dimensions.X.GetVector(x, false),
-			yEnd = Dimensions.Y.GetVector(y, false);
+		Vector2 xEnd = Dimensions.X.GetVector(x + 1) - Dimensions.X.GetVector(x),
+			yEnd = Dimensions.Y.GetVector(y + 1) - Dimensions.Y.GetVector(y);
 		meshFilter.mesh = MeshDraft.Quad(Vector2.zero, yEnd, (xEnd + yEnd), xEnd).ToMesh();
 
 		// Create a QuadFace for this grid cell and store it in the return array

@@ -6,7 +6,7 @@ public interface IDimension
 	/// Retrieves the current two-dimensional vector value.
 	/// </summary>
 	/// <returns>A <see cref="Vector2"/> representing the current vector.</returns>
-	Vector2 GetVector(int index, bool global = true);
+	Vector2 GetVector(int index);
 	/// <summary>
 	/// Gets the ray at the specified index.
 	/// </summary>

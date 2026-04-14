@@ -25,7 +25,7 @@ public class GridDimensions : ScriptableObject
 			}
 
 			int numLengths = loopingLengths.Length + 1;
-			int multiplier = index / numLengths + 1;
+			int multiplier = index / numLengths;
 			int addIndex = index % numLengths;
 
 			float toReturn = firstLength * (multiplier + (addIndex >= 1 ? 1 : 0));
@@ -36,12 +36,8 @@ public class GridDimensions : ScriptableObject
 			return toReturn;
 		}
 
-		public virtual Vector2 GetVector(int index, bool global = true)
+		public virtual Vector2 GetVector(int index)
 		{
-			if (global == false)
-			{
-				index = GetLocalIndex(index);
-			}
 			return new Vector2(GetLength(index), 0f);
 		}
 
@@ -56,13 +52,8 @@ public class GridDimensions : ScriptableObject
 		float angle = 90f;
 
 		protected float Angle => angle;
-		public override Vector2 GetVector(int index, bool global = true)
+		public override Vector2 GetVector(int index)
 		{
-			if (global == false)
-			{
-				index = GetLocalIndex(index);
-			}
-
 			return new Vector2(
 				GetLength(index) * Mathf.Cos(Angle * Mathf.Deg2Rad)
 				, GetLength(index) * Mathf.Sin(Angle * Mathf.Deg2Rad)
