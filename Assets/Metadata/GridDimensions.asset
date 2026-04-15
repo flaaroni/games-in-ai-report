@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: GridDimensions
   m_EditorClassIdentifier: Assembly-CSharp::ModelGrid
   xDimension:
-    firstLength: 1
+    firstLength: 0.3
     loopingLengths:
-    - 0.5
+    - 0.6
+    - 0.9
   yDimension:
     firstLength: 1
     loopingLengths:
