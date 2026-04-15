@@ -152,7 +152,17 @@ public class ModelSynthesis
 				}
 
 				// If not, update the possibilities for this neighbor by intersecting with the possible neighbor materials
+				int sizeBefore = faceToPossibleMaterials[neighbor].Count;
 				faceToPossibleMaterials[neighbor].IntersectWith(possibleNeighborMaterials);
+
+				// Check if the number of possibilities didn't change
+				if (sizeBefore == faceToPossibleMaterials[neighbor].Count)
+				{
+					// Skip this neighbor, since it didn't change.
+					// Furhtermore, mark this neighbor as visited, so we don't have to check it again
+					visitedFaces.Add(neighbor);
+					continue;
+				}
 
 				// Add the neighbor to the queue
 				faceQueue.Enqueue(neighbor);
