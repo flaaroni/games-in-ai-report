@@ -6,10 +6,10 @@ public class QuadGridCreator : MonoBehaviour
 {
 	[Header("Grid Size")]
 	[SerializeField]
-	[Range(1, 10)]
+	[Range(1, 50)]
 	int xUnits = 3;
 	[SerializeField]
-	[Range(1, 10)]
+	[Range(1, 50)]
 	int yUnits = 3;
 
 	[Header("Generator")]
