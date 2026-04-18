@@ -32,7 +32,7 @@ public class QuadGridCreator : MonoBehaviour
 	}
 
 	[ContextMenu("Regenerate")]
-	void Generate()
+	public void Generate()
 	{
 		grid.Setup(xUnits, yUnits);
 		if (!grid.IsValid())
