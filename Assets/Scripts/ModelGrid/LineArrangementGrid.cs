@@ -10,7 +10,7 @@ public class LineArrangementGrid : IGridMeshes
 	{
 		[SerializeField]
 		private float angleDegrees = 0f;
-
+		
 		[SerializeField]
 		private float startOffset = 0f;
 
@@ -54,6 +54,10 @@ public class LineArrangementGrid : IGridMeshes
 	}
 
 	[Header("Boundary Rectangle")]
+	
+	[SerializeField]
+	private string gridname = " ";
+
 	[SerializeField]
 	private Vector2 boundaryMin = new Vector2(-5f, -5f);
 

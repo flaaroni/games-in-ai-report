@@ -10,24 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba5d1f7ece43d9b4ba0663ecddfc30b7, type: 3}
-  m_Name: LineArrangementGrid
+  m_Name: DemoSlidersGrid
   m_EditorClassIdentifier: Assembly-CSharp::LineArrangementGrid
-  boundaryMin: {x: -50, y: -50}
+  gridname: DoubleGrid
+  boundaryMin: {x: -100, y: -100}
   boundaryMax: {x: 100, y: 100}
   families:
   - angleDegrees: 0
     startOffset: 0
     count: 20
     spacings:
-    - 2
-  - angleDegrees: 90
+    - 1
+  - angleDegrees: 45
     startOffset: 0
     count: 20
     spacings:
-    - 2
-  - angleDegrees: 50
+    - 1
+  - angleDegrees: 60
     startOffset: 0
     count: 20
     spacings:
-    - 2
-  drawDebugSegments: 1
+    - 1
+  - angleDegrees: 40
+    startOffset: 0
+    count: 20
+    spacings: []
+  drawDebugSegments: 0
