@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba5d1f7ece43d9b4ba0663ecddfc30b7, type: 3}
   m_Name: DemoSquareGrid
   m_EditorClassIdentifier: Assembly-CSharp::LineArrangementGrid
-  gridname: Square Grid
+  gridname: Squares
+  cameraPosition: {x: -29.87, y: 18.88, z: -35}
   boundaryMin: {x: -50, y: -50}
   boundaryMax: {x: 100, y: 100}
   families:

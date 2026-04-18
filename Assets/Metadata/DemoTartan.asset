@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: DemoTartan
   m_EditorClassIdentifier: Assembly-CSharp::LineArrangementGrid
   gridname: Tartan
+  cameraPosition: {x: -63.1, y: 45.5, z: -100.3}
   boundaryMin: {x: -100, y: -100}
   boundaryMax: {x: 100, y: 100}
   families:

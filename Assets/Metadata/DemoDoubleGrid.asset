@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: DemoDoubleGrid
   m_EditorClassIdentifier: Assembly-CSharp::LineArrangementGrid
   gridname: DoubleGrid
+  cameraPosition: {x: -29.87, y: 18.88, z: -10}
   boundaryMin: {x: -100, y: -100}
   boundaryMax: {x: 100, y: 100}
   families:

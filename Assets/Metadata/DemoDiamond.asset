@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: DemoDiamond
   m_EditorClassIdentifier: Assembly-CSharp::LineArrangementGrid
   gridname: Diamond
+  cameraPosition: {x: -40.8, y: 0, z: -67.3}
   boundaryMin: {x: -100, y: -100}
   boundaryMax: {x: 100, y: 100}
   families:

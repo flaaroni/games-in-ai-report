@@ -57,6 +57,8 @@ public class LineArrangementGrid : IGridMeshes
 	
 	[SerializeField]
 	private string gridname = " ";
+	[SerializeField]
+	private Vector3 cameraPosition = new Vector3();
 
 	[SerializeField]
 	private Vector2 boundaryMin = new Vector2(-5f, -5f);
@@ -81,6 +83,8 @@ public class LineArrangementGrid : IGridMeshes
 	private const float Epsilon = 1e-4f;
 	private const float AreaEpsilon = 1e-3f;
 
+	public override string GridName => gridname;
+	public override Vector3 CameraPosition => cameraPosition;
 	public override void Setup(params int[] numUnitsPerAxis)
 	{
 		// Not used. This generator is driven by line families.

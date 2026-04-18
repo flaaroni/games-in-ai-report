@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba5d1f7ece43d9b4ba0663ecddfc30b7, type: 3}
   m_Name: DemoSlidersGrid
   m_EditorClassIdentifier: Assembly-CSharp::LineArrangementGrid
-  gridname: DoubleGrid
+  gridname: Slider
+  cameraPosition: {x: -13.9, y: 10, z: -25.1}
   boundaryMin: {x: -100, y: -100}
   boundaryMax: {x: 100, y: 100}
   families:
@@ -34,5 +35,6 @@ MonoBehaviour:
   - angleDegrees: 40
     startOffset: 0
     count: 20
-    spacings: []
+    spacings:
+    - 2
   drawDebugSegments: 0

@@ -18,6 +18,7 @@ public class DropdownConstraints : MonoBehaviour
 		{
 			dropdown.options.Add(new TMPro.TMP_Dropdown.OptionData(constraint.DisplayName));
 		}
+		dropdown.value = 0;
 	}
 
 	public void OnValueChanged(int value)
