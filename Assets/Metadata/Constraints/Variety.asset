@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e524364a1713b004381047e3315c501c, type: 3}
+  m_Name: Variety
+  m_EditorClassIdentifier: Assembly-CSharp::Constraints
+  displayName: Variety
+  touchingMaterials:
+  - left: {fileID: 0}
+    right: {fileID: 0}
+  - left: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
+    right: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
+  - left: {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}
+    right: {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}
+  - left: {fileID: 2100000, guid: ea2af0dfc1e8f7f4e80edb4b88fa7b1a, type: 2}
+    right: {fileID: 2100000, guid: ea2af0dfc1e8f7f4e80edb4b88fa7b1a, type: 2}
+  - left: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
+    right: {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}
+  - left: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
+    right: {fileID: 2100000, guid: ea2af0dfc1e8f7f4e80edb4b88fa7b1a, type: 2}
+  - left: {fileID: 0}
+    right: {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}
