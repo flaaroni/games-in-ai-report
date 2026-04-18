@@ -19,9 +19,13 @@ public class Constraints : ScriptableObject
 	}
 
 	[SerializeField]
+	string displayName;
+	[SerializeField]
 	MaterialPair[] touchingMaterials;
 
 	Dictionary<Material, HashSet<Material>> touchingMap;
+
+	public string DisplayName => displayName;
 
 	/// <summary>
 	/// Get all materials.

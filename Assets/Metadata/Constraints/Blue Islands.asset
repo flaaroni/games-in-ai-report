@@ -10,10 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e524364a1713b004381047e3315c501c, type: 3}
-  m_Name: Constraints 01
+  m_Name: Blue Islands
   m_EditorClassIdentifier: Assembly-CSharp::Constraints
+  displayName: Blue Islands
   touchingMaterials:
+  - left: {fileID: 0}
+    right: {fileID: 0}
   - left: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
     right: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
   - left: {fileID: 0}
     right: {fileID: 2100000, guid: 4079e772c2df8a84099a7ccdce089cc1, type: 2}
+  - left: {fileID: 0}
+    right: {fileID: 2100000, guid: bc2da3bf565c30c4d81ef3474b86ee7b, type: 2}
