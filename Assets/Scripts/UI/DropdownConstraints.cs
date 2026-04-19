@@ -24,6 +24,5 @@ public class DropdownConstraints : MonoBehaviour
 	public void OnValueChanged(int value)
 	{
 		gridCreator.Constraints = allOptions[value];
-		gridCreator.Generate();
 	}
 }

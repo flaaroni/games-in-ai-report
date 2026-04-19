@@ -28,6 +28,5 @@ public class DropdownGrid : MonoBehaviour
 	{
 		gridCreator.Grid = allOptions[value];
 		cameraTransform.position = allOptions[value].CameraPosition;
-		gridCreator.Generate();
 	}
 }

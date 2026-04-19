@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,15 +21,16 @@ public class QuadGridCreator : MonoBehaviour
 	public Constraints Constraints { get => constraints; set => constraints = value; }
 	public IGridMeshes Grid { get => grid; set => grid = value; }
 
-	void Start()
+	IEnumerator Start()
 	{
+		yield return null; // Wait a frame to ensure all other Start() methods have run
 		Generate();
 	}
 
 	[ContextMenu("Regenerate")]
 	public void Generate()
 	{
-		if (!Grid.IsValid())
+		if (Grid == null || !Grid.IsValid())
 		{
 			Debug.LogError("Invalid grid configuration. Please check the dimensions and materials.");
 			return;
@@ -42,6 +44,12 @@ public class QuadGridCreator : MonoBehaviour
 
 		// Run the generator
 		ICollection<IFace> faces = Grid.Generate(transform, groupPrefab, modelPrefab);
+
+		if (faces == null || faces.Count == 0)
+		{
+			Debug.LogError($"Grid {Grid.GridName} failed to generate any faces");
+			return;
+		}
 		modelSynthesis = new ModelSynthesis(faces, Constraints);
 		modelSynthesis.Generate();
 

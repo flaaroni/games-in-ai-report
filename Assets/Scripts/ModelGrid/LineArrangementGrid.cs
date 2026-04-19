@@ -115,7 +115,7 @@ public class LineArrangementGrid : IGridMeshes
 		BuildLines(builtLines);
 		ClipLinesToBoundary(builtLines, clippedSegments);
 
-		Debug.Log($"Built {builtLines.Count} lines and {clippedSegments.Count} clipped boundary segments.");
+		//Debug.Log($"Built {builtLines.Count} lines and {clippedSegments.Count} clipped boundary segments.");
 
 		return BuildFacesBySlabIntersection(parent, groupPrefab, modelPrefab);
 	}
@@ -157,7 +157,7 @@ public class LineArrangementGrid : IGridMeshes
 
 		AssignNeighborsByIntervals(records, keyToRecord);
 
-		Debug.Log($"Created {faces.Count} faces.");
+		//Debug.Log($"Created {faces.Count} faces.");
 		return faces;
 	}
 

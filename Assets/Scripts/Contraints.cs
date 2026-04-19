@@ -23,7 +23,12 @@ public class Constraints : ScriptableObject
 	[SerializeField]
 	MaterialPair[] touchingMaterials;
 
-	Dictionary<Material, HashSet<Material>> touchingMap;
+	// All unique materials that appear in the touchingMaterials array, generated on demand
+	Material[] allMaterials = null;
+	// Cache for the map of materials to the materials they are touching, generated on demand
+	// Index is the index of the material in the allMaterials array,
+	// value is the set of materials that are touching that material
+	Dictionary<byte, HashSet<Material>> touchingMap = null;
 
 	public string DisplayName => displayName;
 
@@ -33,13 +38,17 @@ public class Constraints : ScriptableObject
 	/// <returns>A read-only list of all materials.</returns>
 	public IReadOnlyList<Material> GetMaterials()
 	{
-		HashSet<Material> materials = new HashSet<Material>();
-		foreach (var pair in touchingMaterials)
+		if ((allMaterials == null) || (allMaterials.Length == 0))
 		{
-			materials.Add(pair.Left);
-			materials.Add(pair.Right);
+			HashSet<Material> materials = new HashSet<Material>();
+			foreach (var pair in touchingMaterials)
+			{
+				materials.Add(pair.Left);
+				materials.Add(pair.Right);
+			}
+			allMaterials = materials.ToArray();
 		}
-		return materials.ToArray();
+		return allMaterials;
 	}
 
 	/// <summary>
@@ -52,31 +61,34 @@ public class Constraints : ScriptableObject
 		HashSet<Material> toReturn;
 
 		// Check if the map has been generated yet
+		byte index;
 		if (touchingMap == null)
 		{
 			// If not, generate it
-			touchingMap = new Dictionary<Material, HashSet<Material>>();
+			touchingMap = new(GetMaterials().Count);
 
 			// Go through all the pairs and add them to the map
 			foreach (var pair in touchingMaterials)
 			{
 				// Check if left material has been added to the map
-				if (!touchingMap.TryGetValue(pair.Left, out toReturn))
+				index = GetMaterialIndex(pair.Left);
+				if (!touchingMap.TryGetValue(index, out toReturn))
 				{
 					// If not, add it with an empty set
 					toReturn = new HashSet<Material>();
-					touchingMap.Add(pair.Left, toReturn);
+					touchingMap.Add(index, toReturn);
 				}
 
 				// Add the right material to the left material's set
 				toReturn.Add(pair.Right);
 
 				// Check if right material has been added to the map
-				if (!touchingMap.TryGetValue(pair.Right, out toReturn))
+				index = GetMaterialIndex(pair.Right);
+				if (!touchingMap.TryGetValue(index, out toReturn))
 				{
 					// If not, add it with an empty set
 					toReturn = new HashSet<Material>();
-					touchingMap.Add(pair.Right, toReturn);
+					touchingMap.Add(index, toReturn);
 				}
 
 				// Add the left material to the right material's set
@@ -85,6 +97,19 @@ public class Constraints : ScriptableObject
 		}
 
 		// Check the cache, and return the result if it exists, otherwise return an empty set
-		return touchingMap.TryGetValue(material, out toReturn) ? toReturn : new HashSet<Material>();
+		index = GetMaterialIndex(material);
+		return touchingMap.TryGetValue(index, out toReturn) ? toReturn : new HashSet<Material>();
+	}
+
+	private byte GetMaterialIndex(Material material)
+	{
+		for (byte i = 0; i < allMaterials.Length; i++)
+		{
+			if (allMaterials[i] == material)
+			{
+				return i;
+			}
+		}
+		throw new ArgumentException($"Material {material} not found in constraints");
 	}
 }

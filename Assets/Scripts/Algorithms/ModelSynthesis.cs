@@ -93,6 +93,12 @@ public class ModelSynthesis
 
 	bool PropogateChanges(IFace face)
 	{
+		if (face == null)
+		{
+			Debug.LogError("PropogateChanges(face): Face is null");
+			throw new System.ArgumentNullException(nameof(face));
+		}
+
 		// Setup a list of edges that are already visited
 		HashSet<IFace> visitedFaces = new();
 
@@ -103,7 +109,12 @@ public class ModelSynthesis
 		{
 			// Dequeue, and make sure we haven't visited this face, yet
 			IFace checkFace = faceQueue.Dequeue();
-			if (!visitedFaces.Add(checkFace))
+			if (checkFace == null)
+			{
+				Debug.LogError("PropogateChanges(face): checkFace is null");
+				continue;
+			}
+			else if (!visitedFaces.Add(checkFace))
 			{
 				// If we have visited this face, skip it
 				continue;
@@ -146,17 +157,23 @@ public class ModelSynthesis
 			foreach (IFace neighbor in checkFace.GetNeighbors())
 			{
 				// If the neighbor is already visited, skip it
-				if (!visitedFaces.Add(neighbor))
+				if (checkFace == null)
+				{
+					Debug.LogError("PropogateChanges(face): neighbor is null");
+					continue;
+				}
+				else if (!visitedFaces.Add(neighbor))
 				{
 					continue;
 				}
 
 				// If not, update the possibilities for this neighbor by intersecting with the possible neighbor materials
-				int sizeBefore = faceToPossibleMaterials[neighbor].Count;
-				faceToPossibleMaterials[neighbor].IntersectWith(possibleNeighborMaterials);
+				possibilities = faceToPossibleMaterials[neighbor];
+				int sizeBefore = possibilities.Count;
+				possibilities.IntersectWith(possibleNeighborMaterials);
 
 				// Check if the number of possibilities didn't change
-				if (sizeBefore == faceToPossibleMaterials[neighbor].Count)
+				if (sizeBefore == possibilities.Count)
 				{
 					// Skip this neighbor, since it didn't change.
 					// Furhtermore, mark this neighbor as visited, so we don't have to check it again
